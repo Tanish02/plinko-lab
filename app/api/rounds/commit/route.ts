@@ -1,50 +1,31 @@
 // for now api move to seprate project API
-
-import { runPlinkoEngine } from "@/lib/engine";
-import { createCombinedSeed } from "@/lib/fairness";
+import {
+  createCommit,
+  generateNonce,
+  generateServerSeed,
+} from "@/lib/fairness";
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const { clientSeed, betCents, dropColumn } = await req.json();
+export async function POST() {
+  const serverSeed = generateServerSeed();
+  const nonce = generateNonce();
 
-  const round = await prisma.round.findUnique({
-    where: { id: params.id },
-  });
+  const commitHex = createCommit(serverSeed, nonce);
 
-  if (!round || !round.serverSeed) {
-    return NextResponse.json({ error: "Round not found" }, { status: 404 });
-  }
-
-  const combinedSeed = createCombinedSeed(
-    round.serverSeed,
-    clientSeed,
-    round.nonce,
-  );
-
-  const engineResult = runPlinkoEngine(combinedSeed, round.rows, dropColumn);
-
-  const updated = await prisma.round.update({
-    where: { id: round.id },
+  const round = await prisma.round.create({
     data: {
-      status: "STARTED",
-      clientSeed,
-      combinedSeed,
-      pegMapHash: engineResult.pegMapHash,
-      dropColumn,
-      binIndex: engineResult.binIndex,
-      betCents,
-      pathJson: engineResult.path,
+      status: "CREATED",
+      serverSeed,
+      nonce,
+      commitHex,
+      rows: 12,
     },
   });
 
   return NextResponse.json({
-    roundId: updated.id,
-    pegMapHash: engineResult.pegMapHash,
-    binIndex: engineResult.binIndex,
-    rows: updated.rows,
+    roundId: round.id,
+    commitHex,
+    nonce,
   });
 }
