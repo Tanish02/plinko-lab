@@ -53,27 +53,86 @@ export default function Board() {
     drawBoard(ctx);
     drawBall(ctx);
   }, [ballX, ballY]);
-
   const dropBall = async () => {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
+    try {
+      // commit
+      const commitRes = await fetch("/api/rounds/commit", {
+        method: "POST",
+      });
 
-    const startX = width / 2;
-    let y = 20;
+      const commit = await commitRes.json();
 
-    setBallX(startX);
+      const roundId = commit.roundId;
+
+      //  start round
+      const startRes = await fetch(`/api/rounds/${roundId}/start`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clientSeed: "candidate-hello",
+          betCents: 100,
+          dropColumn: 6,
+        }),
+      });
+
+      const start = await startRes.json();
+
+      const path = start.pathJson;
+
+      animatePath(path);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const animatePath = (path: string[]) => {
+    const width = 500;
+    const spacing = 30;
+
+    let x = width / 2;
+    let y = 10;
+
+    setBallX(x);
     setBallY(y);
 
-    const interval = setInterval(() => {
-      y += 5;
-      setBallY(y);
+    let row = 0;
 
-      if (y > height - 40) {
-        clearInterval(interval);
-      }
-    }, 16);
+    const step = () => {
+      if (row >= path.length) return;
+
+      const move = path[row];
+
+      const targetX = move === "L" ? x - spacing / 2 : x + spacing / 2;
+
+      const targetY = y + spacing;
+
+      let progress = 0;
+
+      const anim = setInterval(() => {
+        progress += 0.1;
+
+        const newX = x + (targetX - x) * progress;
+        const newY = y + (targetY - y) * progress;
+
+        setBallX(newX);
+        setBallY(newY);
+
+        if (progress >= 1) {
+          clearInterval(anim);
+
+          x = targetX;
+          y = targetY;
+
+          row++;
+
+          setTimeout(step, 40);
+        }
+      }, 16);
+    };
+
+    step();
   };
-
   return (
     <div className="flex flex-col items-center gap-6 mt-10">
       <canvas ref={canvasRef} className="bg-black rounded-xl shadow-lg" />

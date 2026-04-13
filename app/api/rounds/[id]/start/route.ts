@@ -40,11 +40,11 @@ export async function POST(
       pathJson: engineResult.path,
     },
   });
-
   return NextResponse.json({
     roundId: updated.id,
     pegMapHash: engineResult.pegMapHash,
     binIndex: engineResult.binIndex,
     rows: updated.rows,
+    pathJson: engineResult.path,
   });
 }
