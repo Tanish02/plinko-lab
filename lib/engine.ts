@@ -1,4 +1,7 @@
 // core engine logic
+import { sha256 } from "./crypto";
+import { seedToNumber } from "./fairness";
+import { createXorShift32 } from "./prng";
 
 function generateBias(rand: () => number): number {
   const bias = 0.5 + (rand() - 0.5) * 0.2;
@@ -49,3 +52,27 @@ function computePath(
 
   return { path, binIndex: pos };
 }
+export function runPlinkoEngine(
+  combinedSeed: string,
+  rows: number,
+  dropColumn: number,
+) {
+  const seedNumber = seedToNumber(combinedSeed);
+
+  const rand = createXorShift32(seedNumber);
+
+  const pegMap = generatePegMap(rows, rand);
+
+  const pegMapHash = sha256(JSON.stringify(pegMap));
+
+  const { path, binIndex } = computePath(pegMap, rand, dropColumn, rows);
+
+  return {
+    pegMap,
+    pegMapHash,
+    path,
+    binIndex,
+  };
+}
+
+/* need to test 1st */
