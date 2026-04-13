@@ -1,7 +1,7 @@
 "use client";
 
+import confetti from "canvas-confetti";
 import { useEffect, useRef, useState } from "react";
-
 export default function Board() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ballX, setBallX] = useState<number | null>(null);
@@ -123,13 +123,12 @@ export default function Board() {
 
     let pos = 0;
     let x = width / 2;
-    let y = 10;
+    let y = 60;
 
     setBallX(x);
     setBallY(y);
 
     const step = () => {
-      // If finished all peg moves
       if (pos >= path.length) {
         const finalY = y + 90;
         let progress = 0;
@@ -138,12 +137,21 @@ export default function Board() {
           progress += 0.08;
 
           const newY = y + (finalY - y) * progress;
-
           setBallY(newY);
 
           if (progress >= 1) {
             clearInterval(drop);
+
             highlightBin(binIndex);
+
+            confetti({
+              particleCount: 120,
+              spread: 70,
+              origin: {
+                x: (binIndex + 0.5) / 13,
+                y: 0.85,
+              },
+            });
           }
         }, 16);
 
