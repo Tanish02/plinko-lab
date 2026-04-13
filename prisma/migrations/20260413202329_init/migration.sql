@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "Round" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" TEXT NOT NULL,
     "nonce" TEXT NOT NULL,
     "commitHex" TEXT NOT NULL,
@@ -12,8 +12,10 @@ CREATE TABLE "Round" (
     "rows" INTEGER NOT NULL,
     "dropColumn" INTEGER,
     "binIndex" INTEGER,
-    "payoutMultiplier" REAL,
+    "payoutMultiplier" DOUBLE PRECISION,
     "betCents" INTEGER,
     "pathJson" JSONB,
-    "revealedAt" DATETIME
+    "revealedAt" TIMESTAMP(3),
+
+    CONSTRAINT "Round_pkey" PRIMARY KEY ("id")
 );
