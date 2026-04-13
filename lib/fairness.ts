@@ -14,3 +14,8 @@ export function createCombinedSeed(
 ) {
   return sha256(`${serverSeed}:${clientSeed}:${nonce}`);
 }
+
+export function seedToNumber(seedHex: string): number {
+  const first8 = seedHex.slice(0, 8); // first 4 bytes
+  return parseInt(first8, 16);
+}
