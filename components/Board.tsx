@@ -33,6 +33,24 @@ export default function Board() {
     }
   };
 
+  const drawBins = (ctx: CanvasRenderingContext2D) => {
+    const binCount = 13;
+    const binWidth = width / binCount;
+    const binY = 520;
+
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+
+    for (let i = 0; i <= binCount; i++) {
+      const x = i * binWidth;
+
+      ctx.beginPath();
+      ctx.moveTo(x, binY);
+      ctx.lineTo(x, binY + 40);
+      ctx.stroke();
+    }
+  };
+
   const drawBall = (ctx: CanvasRenderingContext2D) => {
     if (ballX === null || ballY === null) return;
 
@@ -87,30 +105,46 @@ export default function Board() {
     }
   };
   const animatePath = (path: string[]) => {
-    const width = 500;
     const spacing = 30;
 
+    let pos = 0;
     let x = width / 2;
     let y = 10;
 
     setBallX(x);
     setBallY(y);
 
-    let row = 0;
-
     const step = () => {
-      if (row >= path.length) return;
+      // If finished all peg moves
+      if (pos >= path.length) {
+        const finalY = y + 90;
+        let progress = 0;
 
-      const move = path[row];
+        const drop = setInterval(() => {
+          progress += 0.08;
 
-      const targetX = move === "L" ? x - spacing / 2 : x + spacing / 2;
+          const newY = y + (finalY - y) * progress;
+
+          setBallY(newY);
+
+          if (progress >= 1) {
+            clearInterval(drop);
+          }
+        }, 16);
+
+        return;
+      }
+
+      const dir = path[pos];
+
+      const targetX = dir === "L" ? x - spacing / 2 : x + spacing / 2;
 
       const targetY = y + spacing;
 
       let progress = 0;
 
       const anim = setInterval(() => {
-        progress += 0.1;
+        progress += 0.08;
 
         const newX = x + (targetX - x) * progress;
         const newY = y + (targetY - y) * progress;
@@ -124,7 +158,7 @@ export default function Board() {
           x = targetX;
           y = targetY;
 
-          row++;
+          pos++;
 
           setTimeout(step, 40);
         }
@@ -133,6 +167,7 @@ export default function Board() {
 
     step();
   };
+
   return (
     <div className="flex flex-col items-center gap-6 mt-10">
       <canvas ref={canvasRef} className="bg-black rounded-xl shadow-lg" />
