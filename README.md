@@ -1,95 +1,202 @@
-# Plinko Lab
+# 🎯 Plinko Lab
 
-🔗 live : https://plinko-lab-eight.vercel.app/
+A **provably fair Plinko game simulation** built with **Next.js, TypeScript, Prisma, and PostgreSQL**.
+The project demonstrates backend fairness verification using cryptographic seeds along with an animated Plinko board UI.
 
-## 1. Technologies & Libraries
+🔗 **Live Demo:**
+https://plinko-lab-eight.vercel.app/
 
-## 📸 Screenshots
+---
 
-### 1. UI
+# 🚀 Technologies & Libraries
 
-- `testing fairness.png`
-- `testing.png`
-
-These images appear to be related to the user interface or visual output of the application.
-
-### 2. Testing
-
-- `New Request - Tanish's Workspace 13-04-2026 ...`
-- `prng.test.ts - plinko-lab - Visual Studio Code 13-04-2026 ...`
-- `reveal endpoint - Tanish's Workspace 13-04-2026 ...`
-- `round start - Tanish's Workspace 13-04-2026 ...`
-
-These snapshots are likely taken during the process of running or developing tests, or while working with test files and endpoints.
-
-**Languages & Runtimes**
+## Languages
 
 - TypeScript
 - JavaScript
 
-**Frameworks**
+## Frameworks
 
-- Next.js (customized, see AGENTS.md)
-- Prisma (database toolkit)
+- Next.js (App Router)
+- React
 
-**Tooling**
+## Backend & Database
 
-- ESLint (with custom config)
+- Prisma ORM
+- PostgreSQL (Neon Database)
+
+## Tooling
+
+- ESLint
 - PostCSS
-- npm (Node.js package manager)
+- npm
 
-**Testing**
+## Testing
 
-- No explicit test runner detected, but test files are present.
-- Tested using Vitest and Postman.
+- Vitest
+- Postman (API testing)
 
-## 2. Project Overview
+---
 
-This repository contains a TypeScript-based application structured with a customized Next.js framework. It includes components, API routes, and supporting libraries for a Plinko-style game or simulation. The project appears to focus on implementing game logic, fairness, and cryptographic utilities, with supporting tests and configuration.
+# 🧠 Project Overview
 
-## 3. Repository Structure
+This project implements a **Plinko game engine with provable fairness**.
 
-- `app/`: The Next.js application directory
-  - `page.tsx`: The main page
-  - `api/`: API routes
-- `lib/`: Supporting libraries
-  - `utils/`: Utility functions
-  - `types/`: TypeScript types
-- `tests/`: Test files
-- `next.config.js`: Next.js configuration
-- `tsconfig.json`: TypeScript configuration
+Each round follows this process:
 
-## 4. Getting Started
+1. Server generates a **secret serverSeed**
+2. A **commit hash** is stored and returned
+3. User provides a **clientSeed**
+4. Seeds combine to generate a **deterministic peg path**
+5. The ball follows this path visually
+6. The round can be **verified after reveal**
 
-First, run the development server:
+This ensures the game outcome cannot be manipulated.
+
+---
+
+# 📸 Screenshots
+
+## UI
+
+### Game Interface
+
+![Plinko UI](./snapshots/UI%20snapshot.png)
+
+### Round Result Popup
+
+![Result Popup](./snapshots/UI%20snapshot1.png)
+
+---
+
+## Testing & Development
+
+### Commit Endpoint Test
+
+![Commit Test](./snapshots/testing1.png)
+
+### Round Start Test
+
+![Round Start](./snapshots/testing2.png)
+
+### Reveal Endpoint Test
+
+![Reveal Test](./snapshots/testing3.png)
+
+### Verify Fairness Test
+
+![Verify Test](./snapshots/testing4.png)
+
+---
+
+## Unit Testing (Vitest)
+
+### PRNG Test File
+
+![Vitest](./snapshots/testingVitest.png)
+
+### Test Execution
+
+![Vitest Run](./snapshots/testingVitest2.png)
+
+---
+
+# 🗂 Repository Structure
+
+plinko-lab
+│
+├─ app/
+│ ├─ page.tsx
+│ ├─ verify/
+│ └─ api/
+│
+├─ components/
+│ └─ Board.tsx
+│
+├─ lib/
+│ ├─ prisma.ts
+│ ├─ prng.ts
+│ └─ fairness.ts
+│
+├─ prisma/
+│ ├─ schema.prisma
+│ └─ migrations/
+│
+├─ tests/
+│ └─ prng.test.ts
+│
+└─ snapshots/
+
+---
+
+# ⚙️ Getting Started
+
+Install dependencies:
 
 ```bash
+npm install
+
+Run development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+Open:
+
+http://localhost:3000
+🧪 Running Tests
+npm run test
+
+Tests verify:
+
+deterministic PRNG
+fairness logic
+peg path generation
+🔐 Provable Fairness
+
+Each round uses:
+
+serverSeed + clientSeed + nonce
+
+The server initially publishes:
+
+SHA256(serverSeed)
+
+Later the seed is revealed so players can verify the round outcome.
+
+Verification endpoint:
+
+/api/verify
+🌐 Deployment
+
+The project is deployed on Vercel with:
+
+Serverless API routes
+Neon PostgreSQL database
+Prisma ORM
+
+Live URL:
+
+https://plinko-lab-eight.vercel.app/
+📌 Key Features
+
+✔ Provably fair gameplay
+✔ Deterministic PRNG path generation
+✔ Animated Plinko board
+✔ Multi-ball play system
+✔ Balance + payout logic
+✔ Round verification system
+✔ Serverless deployment
+
+📚 Learn More
+https://nextjs.org/docs
+https://www.prisma.io/docs
+https://vercel.com/docs
+👨‍💻 Author
+
+Tanish Sharma
+
+Backend-focused developer specializing in Node.js, Express.js, MongoDB, and scalable web systems.
+
+GitHub:
+https://github.com/Tanish02
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## 5. Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## 6. Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
