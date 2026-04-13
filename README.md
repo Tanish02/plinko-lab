@@ -103,6 +103,7 @@ This ensures the game outcome cannot be manipulated.
 
 # 🗂 Repository Structure
 
+```
 plinko-lab
 │
 ├─ app/
@@ -126,6 +127,7 @@ plinko-lab
 │ └─ prng.test.ts
 │
 └─ snapshots/
+```
 
 ---
 
