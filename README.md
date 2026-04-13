@@ -3,8 +3,9 @@
 A **provably fair Plinko game simulation** built with **Next.js, TypeScript, Prisma, and PostgreSQL**.
 The project demonstrates backend fairness verification using cryptographic seeds along with an animated Plinko board UI.
 
-🔗 **Live Demo:**
-https://plinko-lab-eight.vercel.app/
+## 🔗 **Live Demo:**
+
+### https://plinko-lab-eight.vercel.app/
 
 ---
 
@@ -133,6 +134,8 @@ plinko-lab
 
 # ⚙️ Getting Started
 
+---
+
 Install dependencies:
 
 ```bash
@@ -179,6 +182,8 @@ Prisma ORM
 Live URL:
 
 https://plinko-lab-eight.vercel.app/
+
+
 📌 Key Features
 
 ✔ Provably fair gameplay
@@ -202,3 +207,5 @@ Backend-focused developer specializing in Node.js, Express.js, MongoDB, and scal
 GitHub:
 https://github.com/Tanish02
 ```
+
+---
