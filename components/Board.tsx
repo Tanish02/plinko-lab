@@ -240,8 +240,37 @@ export default function Board() {
           -
         </button>
 
-        <span className="text-white">Balls: {balls}</span>
+        <div className="flex items-center gap-4 mt-4">
+          <button
+            onClick={() => setBalls((b) => Math.max(1, b - 1))}
+            className="
+    w-10 h-10
+    bg-blue-600
+    text-white
+    rounded-md
+    text-xl
+    hover:bg-blue-700
+    "
+          >
+            -
+          </button>
 
+          <div className="text-white text-lg">BALLS {balls}</div>
+
+          <button
+            onClick={() => setBalls((b) => Math.min(20, b + 1))}
+            className="
+    w-10 h-10
+    bg-blue-600
+    text-white
+    rounded-md
+    text-xl
+    hover:bg-blue-700
+    "
+          >
+            +
+          </button>
+        </div>
         <button
           onClick={() => setBalls((b) => Math.min(20, b + 1))}
           className="px-3 py-1 bg-gray-700 text-white"
@@ -253,9 +282,18 @@ export default function Board() {
       <button
         onClick={dropBalls}
         disabled={playing}
-        className="px-6 py-2 bg-green-500 rounded-lg"
+        className="
+  w-56 h-14
+  text-xl font-bold
+  text-white
+  rounded-xl
+  bg-gradient-to-r from-green-400 to-green-600
+  hover:scale-105
+  transition
+  shadow-lg
+"
       >
-        DROP BALLS
+        PLAY
       </button>
     </div>
   );
