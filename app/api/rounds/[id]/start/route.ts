@@ -5,12 +5,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
+
   const { clientSeed, betCents, dropColumn } = await req.json();
 
   const round = await prisma.round.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!round || !round.serverSeed) {
@@ -26,7 +28,7 @@ export async function POST(
   const engineResult = runPlinkoEngine(combinedSeed, round.rows, dropColumn);
 
   const updated = await prisma.round.update({
-    where: { id: round.id },
+    where: { id },
     data: {
       status: "STARTED",
       clientSeed,

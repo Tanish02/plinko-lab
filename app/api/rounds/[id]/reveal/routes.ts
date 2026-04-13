@@ -3,10 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
+
   const round = await prisma.round.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!round) {
@@ -14,7 +16,7 @@ export async function POST(
   }
 
   await prisma.round.update({
-    where: { id: round.id },
+    where: { id },
     data: {
       status: "REVEALED",
       revealedAt: new Date(),
