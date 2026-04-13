@@ -7,7 +7,7 @@ export default function Board() {
 
   const [ballX, setBallX] = useState<number | null>(null);
   const [ballY, setBallY] = useState<number | null>(null);
-
+  const [showResult, setShowResult] = useState(false);
   const [balls, setBalls] = useState(5);
   const [bet] = useState(1);
   const [balance, setBalance] = useState(100);
@@ -150,6 +150,7 @@ export default function Board() {
     }
 
     setPlaying(false);
+    setShowResult(true);
   };
 
   const animatePath = (path: string[], binIndex: number, done: () => void) => {
@@ -221,7 +222,6 @@ export default function Board() {
 
     step();
   };
-
   return (
     <div className="flex flex-col items-center gap-4 mt-10">
       <div className="text-white text-lg">Balance: ${balance.toFixed(2)}</div>
@@ -232,48 +232,19 @@ export default function Board() {
         Total Win: ${totalWin.toFixed(2)}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mt-4">
         <button
           onClick={() => setBalls((b) => Math.max(1, b - 1))}
-          className="px-3 py-1 bg-gray-700 text-white"
+          className="w-10 h-10 bg-blue-600 text-white rounded-md text-xl hover:bg-blue-700"
         >
           -
         </button>
 
-        <div className="flex items-center gap-4 mt-4">
-          <button
-            onClick={() => setBalls((b) => Math.max(1, b - 1))}
-            className="
-    w-10 h-10
-    bg-blue-600
-    text-white
-    rounded-md
-    text-xl
-    hover:bg-blue-700
-    "
-          >
-            -
-          </button>
+        <div className="text-white text-lg">BALLS {balls}</div>
 
-          <div className="text-white text-lg">BALLS {balls}</div>
-
-          <button
-            onClick={() => setBalls((b) => Math.min(20, b + 1))}
-            className="
-    w-10 h-10
-    bg-blue-600
-    text-white
-    rounded-md
-    text-xl
-    hover:bg-blue-700
-    "
-          >
-            +
-          </button>
-        </div>
         <button
           onClick={() => setBalls((b) => Math.min(20, b + 1))}
-          className="px-3 py-1 bg-gray-700 text-white"
+          className="w-10 h-10 bg-blue-600 text-white rounded-md text-xl hover:bg-blue-700"
         >
           +
         </button>
@@ -282,21 +253,30 @@ export default function Board() {
       <button
         onClick={dropBalls}
         disabled={playing}
-        className="
-  w-56 h-14
-  text-xl font-bold
-  text-white
-  rounded-xl
-  bg-gradient-to-r from-green-400 to-green-600
-  hover:scale-105
-  transition
-  shadow-lg
-"
+        className="w-56 h-14 text-xl font-bold text-white rounded-xl bg-gradient-to-r from-green-400 to-green-600 hover:scale-105 transition shadow-lg"
       >
         PLAY
       </button>
+
+      {showResult && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#1e293b] p-8 rounded-xl text-center shadow-xl">
+            <h2 className="text-white text-2xl mb-4">Round Complete</h2>
+
+            <p className="text-green-400 text-xl">
+              Total Win: ${totalWin.toFixed(2)}
+            </p>
+
+            <button
+              onClick={() => setShowResult(false)}
+              className="mt-4 px-6 py-2 bg-green-500 rounded-lg text-white hover:bg-green-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
 // end code
