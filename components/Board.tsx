@@ -50,6 +50,18 @@ export default function Board() {
       ctx.stroke();
     }
   };
+  const highlightBin = (binIndex: number) => {
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext("2d")!;
+
+    const binCount = 13;
+    const binWidth = width / binCount;
+    const binY = 520;
+
+    ctx.fillStyle = "rgba(0,255,0,0.4)";
+
+    ctx.fillRect(binIndex * binWidth, binY, binWidth, 40);
+  };
 
   const drawBall = (ctx: CanvasRenderingContext2D) => {
     if (ballX === null || ballY === null) return;
@@ -99,13 +111,14 @@ export default function Board() {
       const start = await startRes.json();
 
       const path = start.pathJson;
+      const binIndex = start.binIndex;
 
-      animatePath(path);
+      animatePath(path, binIndex);
     } catch (err) {
       console.error(err);
     }
   };
-  const animatePath = (path: string[]) => {
+  const animatePath = (path: string[], binIndex: number) => {
     const spacing = 30;
 
     let pos = 0;
@@ -130,6 +143,7 @@ export default function Board() {
 
           if (progress >= 1) {
             clearInterval(drop);
+            highlightBin(binIndex);
           }
         }, 16);
 
