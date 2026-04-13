@@ -93,11 +93,11 @@ This ensures the game outcome cannot be manipulated.
 
 ### PRNG Test File
 
-![Vitest](./snapshots/testingVitest.png)
+![Vitest](./snapshots/testingVItest.png)
 
 ### Test Execution
 
-![Vitest Run](./snapshots/testingVitest2.png)
+![Vitest Run](./snapshots/testingVItest2.png)
 
 ---
 
