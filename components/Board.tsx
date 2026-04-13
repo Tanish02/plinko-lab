@@ -69,6 +69,7 @@ export default function Board() {
     canvas.height = height;
 
     drawBoard(ctx);
+    drawBins(ctx);
     drawBall(ctx);
   }, [ballX, ballY]);
   const dropBall = async () => {
