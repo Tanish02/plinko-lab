@@ -1,17 +1,26 @@
 "use client";
 
-import confetti from "canvas-confetti";
 import { useEffect, useRef, useState } from "react";
+
 export default function Board() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const [ballX, setBallX] = useState<number | null>(null);
   const [ballY, setBallY] = useState<number | null>(null);
+
+  const [balls, setBalls] = useState(5);
+  const [bet] = useState(1);
+  const [balance, setBalance] = useState(100);
+  const [totalWin, setTotalWin] = useState(0);
+  const [playing, setPlaying] = useState(false);
 
   const width = 500;
   const height = 600;
 
   const rows = 12;
   const spacing = 30;
+
+  const multipliers = [0.2, 0.5, 0.8, 1, 1.5, 3, 5, 3, 1.5, 1, 0.8, 0.5, 0.2];
 
   const drawBoard = (ctx: CanvasRenderingContext2D) => {
     ctx.clearRect(0, 0, width, height);
@@ -49,7 +58,19 @@ export default function Board() {
       ctx.lineTo(x, binY + 40);
       ctx.stroke();
     }
+
+    ctx.fillStyle = "orange";
+    ctx.font = "12px Arial";
+
+    for (let i = 0; i < multipliers.length; i++) {
+      ctx.fillText(
+        multipliers[i] + "x",
+        i * binWidth + binWidth / 3,
+        binY + 55,
+      );
+    }
   };
+
   const highlightBin = (binIndex: number) => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
@@ -59,7 +80,6 @@ export default function Board() {
     const binY = 520;
 
     ctx.fillStyle = "rgba(0,255,0,0.4)";
-
     ctx.fillRect(binIndex * binWidth, binY, binWidth, 40);
   };
 
@@ -84,43 +104,55 @@ export default function Board() {
     drawBins(ctx);
     drawBall(ctx);
   }, [ballX, ballY]);
-  const dropBall = async () => {
-    try {
-      // commit
-      const commitRes = await fetch("/api/rounds/commit", {
-        method: "POST",
-      });
 
-      const commit = await commitRes.json();
+  const dropSingleBall = async () => {
+    const commitRes = await fetch("/api/rounds/commit", {
+      method: "POST",
+    });
 
-      const roundId = commit.roundId;
+    const commit = await commitRes.json();
+    const roundId = commit.roundId;
 
-      //  start round
-      const startRes = await fetch(`/api/rounds/${roundId}/start`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clientSeed: "candidate-hello",
-          betCents: 100,
-          dropColumn: 6,
-        }),
-      });
+    const startRes = await fetch(`/api/rounds/${roundId}/start`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        clientSeed: "candidate-hello",
+        betCents: 100,
+        dropColumn: 6,
+      }),
+    });
 
-      const start = await startRes.json();
+    const start = await startRes.json();
 
-      const path = start.pathJson;
-      const binIndex = start.binIndex;
+    const path = start.pathJson;
+    const binIndex = start.binIndex;
 
-      animatePath(path, binIndex);
-    } catch (err) {
-      console.error(err);
-    }
+    return new Promise<void>((resolve) => {
+      animatePath(path, binIndex, resolve);
+    });
   };
-  const animatePath = (path: string[], binIndex: number) => {
-    const spacing = 30;
 
+  const dropBalls = async () => {
+    if (playing) return;
+
+    setPlaying(true);
+    setTotalWin(0);
+
+    const cost = bet * balls;
+    setBalance((prev) => prev - cost);
+
+    for (let i = 0; i < balls; i++) {
+      await dropSingleBall();
+      await new Promise((r) => setTimeout(r, 400));
+    }
+
+    setPlaying(false);
+  };
+
+  const animatePath = (path: string[], binIndex: number, done: () => void) => {
     let pos = 0;
     let x = width / 2;
     let y = 60;
@@ -144,14 +176,13 @@ export default function Board() {
 
             highlightBin(binIndex);
 
-            confetti({
-              particleCount: 120,
-              spread: 70,
-              origin: {
-                x: (binIndex + 0.5) / 13,
-                y: 0.85,
-              },
-            });
+            const multiplier = multipliers[binIndex];
+            const win = bet * multiplier;
+
+            setTotalWin((prev) => prev + win);
+            setBalance((prev) => prev + win);
+
+            done();
           }
         }, 16);
 
@@ -192,12 +223,42 @@ export default function Board() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 mt-10">
+    <div className="flex flex-col items-center gap-4 mt-10">
+      <div className="text-white text-lg">Balance: ${balance.toFixed(2)}</div>
+
       <canvas ref={canvasRef} className="bg-black rounded-xl shadow-lg" />
 
-      <button onClick={dropBall} className="px-6 py-2 bg-green-500 rounded-lg">
-        DROP BALL
+      <div className="text-green-400 text-lg">
+        Total Win: ${totalWin.toFixed(2)}
+      </div>
+
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => setBalls((b) => Math.max(1, b - 1))}
+          className="px-3 py-1 bg-gray-700 text-white"
+        >
+          -
+        </button>
+
+        <span className="text-white">Balls: {balls}</span>
+
+        <button
+          onClick={() => setBalls((b) => Math.min(20, b + 1))}
+          className="px-3 py-1 bg-gray-700 text-white"
+        >
+          +
+        </button>
+      </div>
+
+      <button
+        onClick={dropBalls}
+        disabled={playing}
+        className="px-6 py-2 bg-green-500 rounded-lg"
+      >
+        DROP BALLS
       </button>
     </div>
   );
 }
+
+// end code
