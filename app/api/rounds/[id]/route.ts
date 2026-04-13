@@ -1,16 +1,18 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
+
   const round = await prisma.round.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!round) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ error: "Round not found" }, { status: 404 });
   }
 
   return NextResponse.json(round);
